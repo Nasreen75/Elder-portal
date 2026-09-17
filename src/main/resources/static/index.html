@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elder Care & Smart Medicine Caregiver Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .btn-custom { border-radius: 10px; font-weight: 600; padding: 12px 20px; }
+        .status-badge { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; }
+        .stock-badge { font-size: 0.85rem; padding: 5px 10px; border-radius: 12px; }
+
+        /* Equal Input Heights and Uniform Padding */
+        .form-control, .form-select {
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            font-size: 0.95rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fs-3 fw-bold" href="#"><i class="fa-solid fa-heart-pulse me-2"></i> CareGiver & Medicine Smart System</a>
+        <div>
+            <a href="dashboard.html" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-table-columns me-1"></i> Patient Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 mb-5">
+
+    <!-- Search & Filter Bar -->
+    <div class="card p-3 mb-4 bg-white">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" id="searchInput" onkeyup="filterData()" class="form-control" placeholder="Search by Patient Name or Medicine Name...">
+                </div>
+            </div>
+            <div class="col-md-3 text-end">
+                <button onclick="clearSearch()" class="btn btn-outline-secondary w-100 h-100 mt-2 mt-md-0"><i class="fa-solid fa-xmark me-1"></i> Clear Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 NEATLY ALIGNED FULL-WIDTH ADD MEDICINE SCHEDULE FORM 🔹 -->
+    <div class="card p-4 mb-4">
+        <h4 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-plus-circle me-2"></i>Add Medicine Schedule</h4>
+
+        <form id="medForm">
+            <!-- Row 1: Patient Name & Email -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient Name</label>
+                    <input type="text" id="patientName" class="form-control" placeholder="e.g. Ramesh" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Caregiver Email</label>
+                    <input type="email" id="childEmail" class="form-control" placeholder="caregiver@example.com" required>
+                </div>
+            </div>
+
+            <!-- Row 2: Medicine Name & Medicine Type -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Medicine Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="e.g. Paracetamol" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Medicine Type</label>
+                    <select id="medicineType" class="form-select" required>
+                        <option value="Tablet">Tablet / Capsule</option>
+                        <option value="Tonic">Tonic / Syrup</option>
+                        <option value="Injection">Injection</option>
+                        <option value="Ointment">Ointment / Drops</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 3: Frequency & Scheduled Time -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Frequency</label>
+                    <select id="frequency" class="form-select" required>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Alternate Days">Alternate Days</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Scheduled Time (HH:MM)</label>
+                    <input type="time" id="timing" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Row 4: Dosage, Food Interaction & Stock Count -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label">Dosage Instruction (Quantity)</label>
+                    <input type="text" id="instructions" class="form-control" placeholder="e.g. 10ml, 20mg, 1 Tablet" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Food Interaction</label>
+                    <select id="foodInteraction" class="form-select" required>
+                        <option value="After Food">After Food</option>
+                        <option value="Before Food">Before Food</option>
+                        <option value="With Food">With Food</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Initial Stock Count</label>
+                    <input type="number" id="stockCount" class="form-control" value="10" min="1" required>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row">
+                <div class="col-12">
+                    <button type="button" onclick="addMedicine()" class="btn btn-primary btn-custom w-100 fs-5">
+                        <i class="fa-solid fa-bell me-2"></i>Save & Activate Alarm
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Schedules Table -->
+    <div class="card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-secondary fw-bold"><i class="fa-solid fa-calendar-check me-2"></i>Active Schedules</h4>
+            <button onclick="loadMedicines()" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Patient</th>
+                    <th>Medicine Details</th>
+                    <th>Stock Left</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="medicineTable">
+                <!-- Dynamic Data -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Audit History Log -->
+    <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-secondary fw-bold"><i class="fa-solid fa-clock-rotate-left me-2"></i>Audit History Log</h4>
+            <button onclick="loadHistory()" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-rotate me-1"></i>Refresh Log</button>
+        </div>
+        <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+            <table class="table table-striped table-sm align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Patient</th>
+                    <th>Medicine</th>
+                    <th>Status / Event</th>
+                    <th>Timestamp</th>
+                </tr>
+                </thead>
+                <tbody id="historyTable">
+                <!-- Dynamic History Data -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API_URL = "http://localhost:8080/api/medicines";
+    let allMedicines = [];
+    let allHistory = [];
+
+    async function loadMedicines() {
+        try {
+            const res = await fetch(API_URL);
+            allMedicines = await res.json();
+            renderMedicines(allMedicines);
+        } catch (err) {
+            console.error("Error loading medicines:", err);
+        }
+    }
+
+    function renderMedicines(data) {
+        const table = document.getElementById("medicineTable");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+            table.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No active schedules found</td></tr>`;
+            return;
+        }
+
+        data.forEach(med => {
+            const statusBadge = med.taken
+                ? '<span class="badge bg-success status-badge"><i class="fa-solid fa-check me-1"></i>Taken</span>'
+                : '<span class="badge bg-danger status-badge"><i class="fa-solid fa-clock me-1"></i>Pending Alert</span>';
+
+            const stock = med.stockCount !== null && med.stockCount !== undefined ? med.stockCount : 10;
+            const stockBadge = stock <= 3
+                ? `<span class="badge bg-danger stock-badge"><i class="fa-solid fa-triangle-exclamation me-1"></i>${stock} units</span>`
+                : `<span class="badge bg-info text-dark stock-badge"><i class="fa-solid fa-box-archive me-1"></i>${stock} units</span>`;
+
+            const medType = med.medicineType || 'Tablet';
+            const medFreq = med.frequency || 'Daily';
+            const foodBadge = med.foodInteraction === 'Before Food'
+                ? '<span class="badge bg-warning text-dark me-1">Before Food</span>'
+                : '<span class="badge bg-info text-dark me-1">After Food</span>';
+
+            table.innerHTML += `
+                <tr>
+                    <td class="fw-bold">${med.patientName || ''} <br><small class="text-muted">${med.childEmail || ''}</small></td>
+                    <td>
+                        <span class="fw-bold">${med.name || ''}</span>
+                        <div class="my-1">
+                            <span class="badge bg-secondary me-1">${medType}</span>
+                            <span class="badge bg-light text-dark border me-1">${medFreq}</span>
+                            ${foodBadge}
+                        </div>
+                        <small class="text-danger fw-bold">Dose: ${med.instructions || 'As prescribed'}</small>
+                    </td>
+                    <td>${stockBadge}</td>
+                    <td class="fs-5 text-primary fw-bold">${med.timing || ''}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button onclick="toggleStatus(${med.id})" class="btn btn-sm ${med.taken ? 'btn-warning' : 'btn-success'} me-1">
+                            ${med.taken ? 'Undo' : 'Mark Taken'}
+                        </button>
+                        <button onclick="editMedicine(${med.id}, '${med.patientName || ''}', '${med.name || ''}', '${med.timing || ''}', '${med.childEmail || ''}', ${stock}, '${medType}', '${medFreq}', '${med.instructions || ''}', '${med.foodInteraction || ''}')" class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteMedicine(${med.id})" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    async function loadHistory() {
+        try {
+            const res = await fetch(`${API_URL}/history`);
+            allHistory = await res.json();
+            renderHistory(allHistory);
+        } catch (err) {
+            console.error("Error loading history:", err);
+        }
+    }
+
+    function renderHistory(data) {
+        const table = document.getElementById("historyTable");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+            table.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No history available</td></tr>`;
+            return;
+        }
+
+        data.forEach(item => {
+            const formattedTime = new Date(item.timestamp).toLocaleString();
+            const actionBadge = item.actionStatus.includes("TAKEN")
+                ? `<span class="badge bg-success">${item.actionStatus}</span>`
+                : `<span class="badge bg-danger">${item.actionStatus}</span>`;
+
+            table.innerHTML += `
+                <tr>
+                    <td class="fw-bold">${item.patientName || ''}</td>
+                    <td>${item.medicineName || ''}</td>
+                    <td>${actionBadge}</td>
+                    <td><small class="text-muted">${formattedTime}</small></td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterData() {
+        const query = document.getElementById("searchInput").value.toLowerCase().trim();
+
+        const filteredMeds = allMedicines.filter(m =>
+            (m.patientName && m.patientName.toLowerCase().includes(query)) ||
+            (m.name && m.name.toLowerCase().includes(query))
+        );
+
+        const filteredHist = allHistory.filter(h =>
+            (h.patientName && h.patientName.toLowerCase().includes(query)) ||
+            (h.medicineName && h.medicineName.toLowerCase().includes(query))
+        );
+
+        renderMedicines(filteredMeds);
+        renderHistory(filteredHist);
+    }
+
+    function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        renderMedicines(allMedicines);
+        renderHistory(allHistory);
+    }
+
+    async function addMedicine() {
+        const patientName = document.getElementById("patientName").value;
+        const childEmail = document.getElementById("childEmail").value;
+        const name = document.getElementById("name").value;
+        const timing = document.getElementById("timing").value;
+        const stockCount = document.getElementById("stockCount").value;
+        const medicineType = document.getElementById("medicineType").value;
+        const frequency = document.getElementById("frequency").value;
+        const instructions = document.getElementById("instructions").value;
+        const foodInteraction = document.getElementById("foodInteraction").value;
+
+        if(!patientName || !childEmail || !name || !timing) {
+            alert("Please fill all required fields!");
+            return;
+        }
+
+        const medicine = {
+            patientName: patientName,
+            childEmail: childEmail,
+            name: name,
+            dosage: "Standard",
+            timing: timing,
+            stockCount: parseInt(stockCount) || 10,
+            medicineType: medicineType,
+            frequency: frequency,
+            instructions: instructions,
+            foodInteraction: foodInteraction,
+            taken: false
+        };
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(medicine)
+        });
+
+        if(response.ok) {
+            document.getElementById("medForm").reset();
+            document.getElementById("stockCount").value = 10;
+            loadMedicines();
+        } else {
+            alert("Failed to save medicine schedule!");
+        }
+    }
+
+    async function editMedicine(id, currentPatient, currentName, currentTiming, currentEmail, currentStock, currentType, currentFreq, currentInst, currentFood) {
+        const newPatient = prompt("Edit Patient Name:", currentPatient);
+        const newName = prompt("Edit Medicine Name:", currentName);
+        const newTiming = prompt("Edit Time (HH:mm format):", currentTiming);
+        const newEmail = prompt("Edit Caregiver Email:", currentEmail);
+        const newStock = prompt("Edit Stock Count:", currentStock);
+        const newType = prompt("Edit Type (Tablet/Tonic/Injection/Ointment):", currentType);
+        const newFreq = prompt("Edit Frequency (Daily/Weekly/Monthly/Alternate Days):", currentFreq);
+        const newInst = prompt("Edit Dosage/Instructions:", currentInst || '');
+        const newFood = prompt("Edit Food Interaction (Before Food / After Food):", currentFood || 'After Food');
+
+        if (newPatient && newName && newTiming && newEmail) {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    patientName: newPatient,
+                    name: newName,
+                    timing: newTiming,
+                    childEmail: newEmail,
+                    stockCount: parseInt(newStock) || 10,
+                    medicineType: newType || currentType,
+                    frequency: newFreq || currentFreq,
+                    instructions: newInst || currentInst,
+                    foodInteraction: newFood || currentFood
+                })
+            });
+            loadMedicines();
+        }
+    }
+
+    async function toggleStatus(id) {
+        await fetch(`${API_URL}/${id}/toggle`, { method: "PUT" });
+        loadMedicines();
+        loadHistory();
+    }
+
+    async function deleteMedicine(id) {
+        if(confirm("Are you sure you want to delete this schedule?")) {
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            loadMedicines();
+        }
+    }
+
+    loadMedicines();
+    loadHistory();
+</script>
+</body>
+</html>
