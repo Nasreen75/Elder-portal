@@ -1,4 +1,3 @@
-
 package com.medicine.reminder;
 
 import org.springframework.boot.SpringApplication;
@@ -13,7 +12,3 @@ public class ReminderApplication {
         SpringApplication.run(ReminderApplication.class, args);
     }
 }
-
-
-
-
